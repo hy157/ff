@@ -46,7 +46,8 @@
             display: flex; align-items: center;
             gap: 8px;
             min-width: 70px;
-            min-height: 40px;
+            min-height: 44px;
+            height: 44px;
         }
         .coin-bar img, .energy-bar img, .diamond-bar img { width: 30px; height: 30px; }
         .energy-bar {
@@ -61,18 +62,25 @@
         .settings-btn {
             background: #ffd16b;
             border: 2px solid #b17523;
-            border-radius: 16px;
+            border-radius: 19px;
+            width: 68px; height: 44px;
+            min-width: 68px; min-height: 44px;
             margin-left: 8px;
-            width: 48px; height: 48px;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 2px 8px #ffedbc80;
             transition: transform .14s;
             cursor: pointer;
+            font-size: 0;
+            padding: 0;
         }
         .settings-btn img {
-            width: 30px; height: 30px;
+            width: 36px; height: 36px;
         }
-        .settings-btn:active { transform: scale(1.08); }
+        .settings-btn:active { transform: scale(1.09); }
+        .top-bars .settings-btn {
+            padding: 0;
+            height: 44px;
+        }
 
         /* BOTTOM BAR & BUTTONS */
         .bottom-bar {
@@ -143,10 +151,12 @@
         /* Responsive adjustments */
         @media (max-width: 370px) {
             .top-bars { gap: 5px; padding-left: 1px; padding-right: 1px; }
-            .coin-bar, .energy-bar, .diamond-bar { font-size: 16px; min-width: 45px; }
-            .coin-bar img, .energy-bar img, .diamond-bar img { width: 20px; height: 20px; }
-            .settings-btn { width: 33px; height: 33px; }
-            .settings-btn img { width: 19px; height: 19px; }
+            .coin-bar, .energy-bar, .diamond-bar { font-size: 16px; min-width: 45px; min-height: 28px; height: 28px; }
+            .coin-bar img, .energy-bar img, .diamond-bar img { width: 18px; height: 18px; }
+            .settings-btn, .top-bars .settings-btn {
+                width: 42px; height: 28px; min-width: 42px; min-height: 28px;
+            }
+            .settings-btn img { width: 18px; height: 18px; }
         }
     </style>
 </head>

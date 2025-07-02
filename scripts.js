@@ -1,5 +1,10 @@
-// GAME DATA
+// --- GAME STATE ---
 let coins = 500;
+let energy = 25;
+let maxEnergy = 25;
+let diamonds = 10;
+let soundOn = true;
+let musicOn = true;
 let products = {
     wheat: { icon: 'assets/images/iconwheat.png', count: 13, value: 5 },
     water: { icon: 'assets/images/iconwater.png', count: 8, value: 7 },
@@ -16,16 +21,32 @@ let tasks = [
 let taskRewardCollected = false;
 let fieldsOwned = 1;
 
-// UI ELEMENTS
+// --- UI BARS ---
 const coinCountSpan = document.getElementById('coinCount');
+const energyCountSpan = document.getElementById('energyCount');
+const diamondCountSpan = document.getElementById('diamondCount');
+
 function updateCoins(newVal) {
     coins = newVal;
     coinCountSpan.textContent = coins;
 }
+function updateEnergy(newVal) {
+    energy = Math.max(0, Math.min(maxEnergy, newVal));
+    energyCountSpan.textContent = energy + "/" + maxEnergy;
+}
+function updateDiamonds(newVal) {
+    diamonds = newVal;
+    diamondCountSpan.textContent = diamonds;
+}
 
-// MODAL FUNCTIONS
+// Initial bar values
+updateCoins(coins);
+updateEnergy(energy);
+updateDiamonds(diamonds);
+
+// --- MODAL MANAGEMENT ---
 function openModal(type) {
-    closeModal(); // Remove open modal first
+    closeModal(); // Remove existing
     let overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.id = 'modalOverlay';
@@ -36,7 +57,6 @@ function openModal(type) {
     let modal = document.createElement('div');
     modal.className = 'modal-content';
 
-    // Modal Content
     if (type === 'barn') {
         modal.classList.add('modal-orange');
         modal.innerHTML = `
@@ -103,6 +123,20 @@ function openModal(type) {
             </div>
             <div style="font-size:16px;">Owned fields: <span id="fieldsOwnedSpan">${fieldsOwned}</span></div>
         `;
+    } else if (type === 'settings') {
+        modal.classList.add('modal-orange');
+        modal.innerHTML = `
+            <button class="modal-close" onclick="closeModal()">✖️</button>
+            <h2 style="margin-top:0;font-size:28px;">Settings</h2>
+            <div style="margin-top:18px;display:flex;flex-direction:column;gap:20px;align-items:center;">
+                <button id="soundToggleBtn" style="font-size:20px;padding:10px 35px;background:#ffe3a8;color:#c47b0b;border-radius:12px;border:none;">
+                    ${soundOn ? "🔊 Sound: On" : "🔇 Sound: Off"}
+                </button>
+                <button id="musicToggleBtn" style="font-size:20px;padding:10px 35px;background:#ffe3a8;color:#c47b0b;border-radius:12px;border:none;">
+                    ${musicOn ? "🎵 Music: On" : "🔕 Music: Off"}
+                </button>
+            </div>
+        `;
     }
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
@@ -128,7 +162,6 @@ function openModal(type) {
                         // Task 3: Sell 3 different products
                         if (Object.values(products).filter(p=>p.count===0 && p.value>0).length>=3) tasks[2].done = true;
 
-                        // Refresh modal
                         setTimeout(()=>{ closeModal(); openModal('barn'); }, 500);
                     }
                 });
@@ -165,6 +198,20 @@ function openModal(type) {
             }
         });
     }
+
+    // Settings: sound/music toggle
+    if (type === 'settings') {
+        setTimeout(()=>{
+            document.getElementById('soundToggleBtn').onclick = () => {
+                soundOn = !soundOn;
+                document.getElementById('soundToggleBtn').textContent = soundOn ? "🔊 Sound: On" : "🔇 Sound: Off";
+            };
+            document.getElementById('musicToggleBtn').onclick = () => {
+                musicOn = !musicOn;
+                document.getElementById('musicToggleBtn').textContent = musicOn ? "🎵 Music: On" : "🔕 Music: Off";
+            };
+        }, 60);
+    }
 }
 
 function closeModal() {
@@ -197,13 +244,14 @@ function flyCoinToBar(amount, fromElem) {
     setTimeout(()=>{ coin.remove(); }, 750);
 }
 
-// BUTTON EVENTS
+// --- BUTTON EVENTS ---
 document.getElementById('btnBarn').addEventListener('click', ()=>openModal('barn'));
 document.getElementById('btnTasks').addEventListener('click', ()=>openModal('tasks'));
 document.getElementById('btnMap').addEventListener('click', ()=>openModal('map'));
 document.getElementById('btnStore').addEventListener('click', ()=>openModal('store'));
+document.getElementById('btnSettings').addEventListener('click', ()=>openModal('settings'));
 
-// GAME CANVAS MULTI-TOUCH DEMO
+// --- GAME CANVAS MULTI-TOUCH DEMO ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let touches = {};
@@ -228,7 +276,6 @@ function handleTouch(evt) {
         touches[t.identifier] = { x: t.clientX, y: t.clientY };
     }
 }
-
 function handleTouchEnd(evt) {
     evt.preventDefault();
     touches = {};
@@ -237,7 +284,6 @@ function handleTouchEnd(evt) {
         touches[t.identifier] = { x: t.clientX, y: t.clientY };
     }
 }
-
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     Object.values(touches).forEach(t => {

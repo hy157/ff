@@ -1,4 +1,4 @@
-// Oyun verileri
+// GAME DATA
 let coins = 500;
 let products = {
     wheat: { icon: 'assets/images/iconwheat.png', count: 13, value: 5 },
@@ -16,16 +16,16 @@ let tasks = [
 let taskRewardCollected = false;
 let fieldsOwned = 1;
 
-// UI
+// UI ELEMENTS
 const coinCountSpan = document.getElementById('coinCount');
 function updateCoins(newVal) {
     coins = newVal;
     coinCountSpan.textContent = coins;
 }
 
-// Modal fonksiyonları
+// MODAL FUNCTIONS
 function openModal(type) {
-    closeModal(); // Açık modal varsa önce kapat
+    closeModal(); // Remove open modal first
     let overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.id = 'modalOverlay';
@@ -36,19 +36,20 @@ function openModal(type) {
     let modal = document.createElement('div');
     modal.className = 'modal-content';
 
-    // Pencere tipi ve içerik
+    // Modal Content
     if (type === 'barn') {
         modal.classList.add('modal-orange');
         modal.innerHTML = `
             <button class="modal-close" onclick="closeModal()">✖️</button>
-            <h2 style="margin-top:0;font-size:20px;">Barn</h2>
-            <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:12px 0;">
+            <h2 style="margin-top:0;font-size:28px;">Barn</h2>
+            <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:15px 0;">
                 ${Object.entries(products).map(([key, prod]) => `
-                    <div style="display:flex;align-items:center;gap:8px;min-width:90px;">
-                        <img src="${prod.icon}" alt="" style="width:32px;height:32px;">
-                        <span style="font-size:17px;font-weight:bold;">${prod.count}</span>
-                        <img src="assets/images/icongold.png" style="width:20px;height:20px;" alt="coin">
-                        <span style="font-size:15px;">${prod.value}</span>
+                    <div style="display:flex;align-items:center;gap:13px;min-width:120px;">
+                        <img src="${prod.icon}" alt="" style="width:46px;height:46px;">
+                        <span style="font-size:21px;font-weight:bold;">${prod.count}</span>
+                        <img src="assets/images/icongold.png" style="width:28px;height:28px;" alt="coin">
+                        <span style="font-size:18px;">${prod.value}</span>
+                        <button class="sell-btn" data-prod="${key}" style="font-size:15px;padding:7px 15px;background:#fff4c2;color:#b47d12;border-radius:9px;border:none;margin-left:6px;${prod.count===0?'opacity:.35;pointer-events:none;':''}">Sell</button>
                     </div>
                 `).join('')}
             </div>
@@ -57,20 +58,20 @@ function openModal(type) {
         modal.classList.add('modal-red');
         modal.innerHTML = `
             <button class="modal-close" onclick="closeModal()">✖️</button>
-            <h2 style="margin-top:0;font-size:20px;">Tasks</h2>
-            <div style="margin-top:12px;display:flex;flex-direction:column;gap:13px;">
+            <h2 style="margin-top:0;font-size:28px;">Tasks</h2>
+            <div style="margin-top:18px;display:flex;flex-direction:column;gap:17px;">
                 ${tasks.map((t, i) => `
-                    <div style="display:flex;align-items:center;gap:8px;">
-                        <input type="checkbox" disabled ${t.done?'checked':''} style="width:18px;height:18px;">
-                        <span style="font-size:16px;">${t.text}</span>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <input type="checkbox" disabled ${t.done?'checked':''} style="width:21px;height:21px;">
+                        <span style="font-size:18px;">${t.text}</span>
                     </div>
                 `).join('')}
             </div>
-            <div style="margin-top:18px;text-align:center;">
+            <div style="margin-top:22px;text-align:center;">
                 <button id="taskRewardBtn" ${(!tasks.every(t=>t.done)||taskRewardCollected)?'disabled':''}
-                 style="font-size:17px;border:none;padding:8px 18px;border-radius:14px;
-                        background:#fff7c1;color:#b8860b;box-shadow:0 2px 8px #f9dc7e77;display:flex;align-items:center;gap:9px;">
-                    <img src="assets/images/icongold.png" style="width:22px;height:22px;">
+                 style="font-size:19px;border:none;padding:10px 23px;border-radius:15px;
+                        background:#fff7c1;color:#b8860b;box-shadow:0 2px 10px #f9dc7e99;display:flex;align-items:center;gap:12px;">
+                    <img src="assets/images/icongold.png" style="width:30px;height:30px;">
                     200
                 </button>
             </div>
@@ -79,8 +80,8 @@ function openModal(type) {
         modal.classList.add('modal-orange');
         modal.innerHTML = `
             <button class="modal-close" onclick="closeModal()">✖️</button>
-            <h2 style="margin-top:0;font-size:20px;">Map</h2>
-            <div style="font-size:16px;text-align:center;margin-top:18px;">
+            <h2 style="margin-top:0;font-size:28px;">Map</h2>
+            <div style="font-size:19px;text-align:center;margin-top:28px;">
                 Coming soon...
             </div>
         `;
@@ -88,25 +89,54 @@ function openModal(type) {
         modal.classList.add('modal-yellow');
         modal.innerHTML = `
             <button class="modal-close" onclick="closeModal()">✖️</button>
-            <h2 style="margin-top:0;font-size:20px;">Store</h2>
-            <div style="display:flex;align-items:center;gap:12px;margin:22px 0 9px 0;">
-                <img src="assets/images/field.png" style="width:48px;height:48px;">
+            <h2 style="margin-top:0;font-size:28px;">Store</h2>
+            <div style="display:flex;align-items:center;gap:14px;margin:25px 0 15px 0;">
+                <img src="assets/images/field.png" style="width:62px;height:62px;">
                 <div>
-                    <div style="font-size:17px;font-weight:bold;">Buy Field</div>
-                    <div style="display:flex;align-items:center;gap:7px;">
+                    <div style="font-size:21px;font-weight:bold;">Buy Field</div>
+                    <div style="display:flex;align-items:center;gap:11px;">
                         <span>50</span>
-                        <img src="assets/images/icongold.png" style="width:20px;">
-                        <button id="buyFieldBtn" style="font-size:15px;margin-left:10px;background:#ffb647;padding:4px 12px;border-radius:8px;border:none;">Buy</button>
+                        <img src="assets/images/icongold.png" style="width:28px;">
+                        <button id="buyFieldBtn" style="font-size:17px;margin-left:14px;background:#ffb647;padding:7px 18px;border-radius:12px;border:none;">Buy</button>
                     </div>
                 </div>
             </div>
-            <div style="font-size:15px;">Owned fields: <span id="fieldsOwnedSpan">${fieldsOwned}</span></div>
+            <div style="font-size:16px;">Owned fields: <span id="fieldsOwnedSpan">${fieldsOwned}</span></div>
         `;
     }
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Görev ödül butonu animasyonu ve fonksiyonu
+    // Barn: Sell product buttons
+    if (type === 'barn') {
+        setTimeout(()=>{
+            document.querySelectorAll('.sell-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    let prodKey = btn.getAttribute('data-prod');
+                    if (products[prodKey] && products[prodKey].count > 0) {
+                        let soldAmount = products[prodKey].count;
+                        let value = products[prodKey].value;
+                        let income = value * soldAmount;
+                        products[prodKey].count = 0;
+                        flyCoinToBar(income, btn);
+                        updateCoins(coins + income);
+
+                        // Task 1: Harvest 1 wheat
+                        if (prodKey==='wheat') tasks[0].done = true;
+                        // Task 2: Reach 150 coins
+                        if (coins + income >= 150) tasks[1].done = true;
+                        // Task 3: Sell 3 different products
+                        if (Object.values(products).filter(p=>p.count===0 && p.value>0).length>=3) tasks[2].done = true;
+
+                        // Refresh modal
+                        setTimeout(()=>{ closeModal(); openModal('barn'); }, 500);
+                    }
+                });
+            });
+        }, 80);
+    }
+
+    // Tasks: Reward button
     if (type === 'tasks') {
         let btn = document.getElementById('taskRewardBtn');
         if (btn) btn.addEventListener('click', function(e) {
@@ -120,7 +150,7 @@ function openModal(type) {
         });
     }
 
-    // Store butonu satın al fonksiyonu
+    // Store: Buy field button
     if (type === 'store') {
         let buyBtn = document.getElementById('buyFieldBtn');
         if (buyBtn) buyBtn.addEventListener('click', function() {
@@ -142,41 +172,38 @@ function closeModal() {
     if (overlay) overlay.remove();
 }
 
-// Animasyon: coin uçuşu
+// Coin fly animation
 function flyCoinToBar(amount, fromElem) {
-    // Coin bar pozisyonunu bul
     let coinBar = document.querySelector('.coin-bar');
     let barRect = coinBar.getBoundingClientRect();
-    // Kaynağın pozisyonunu bul
     let fromRect = fromElem.getBoundingClientRect();
-    // Coin ikonunu oluştur
     let coin = document.createElement('img');
     coin.src = 'assets/images/icongold.png';
     coin.style.position = 'fixed';
     coin.style.left = fromRect.left + 'px';
     coin.style.top = fromRect.top + 'px';
-    coin.style.width = '32px';
-    coin.style.height = '32px';
+    coin.style.width = '38px';
+    coin.style.height = '38px';
     coin.style.transition = 'all 0.7s cubic-bezier(.77,-0.25,.17,1.2)';
     coin.style.zIndex = 100;
     document.body.appendChild(coin);
     setTimeout(()=>{
-        coin.style.left = (barRect.left+18) + 'px';
-        coin.style.top = (barRect.top+7) + 'px';
-        coin.style.width = '16px';
-        coin.style.height = '16px';
+        coin.style.left = (barRect.left+25) + 'px';
+        coin.style.top = (barRect.top+10) + 'px';
+        coin.style.width = '22px';
+        coin.style.height = '22px';
         coin.style.opacity = '0.33';
     }, 30);
     setTimeout(()=>{ coin.remove(); }, 750);
 }
 
-// Butonlara tıklama eventleri
+// BUTTON EVENTS
 document.getElementById('btnBarn').addEventListener('click', ()=>openModal('barn'));
 document.getElementById('btnTasks').addEventListener('click', ()=>openModal('tasks'));
 document.getElementById('btnMap').addEventListener('click', ()=>openModal('map'));
 document.getElementById('btnStore').addEventListener('click', ()=>openModal('store'));
 
-// Oyun ekranı için eski dokunmatik desteği aynen bırakıyoruz
+// GAME CANVAS MULTI-TOUCH DEMO
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let touches = {};
@@ -226,5 +253,4 @@ function draw() {
 }
 draw();
 
-// Modal çarpı butonları window’dan ulaşsın diye:
 window.closeModal = closeModal;

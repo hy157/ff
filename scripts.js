@@ -1,3 +1,32 @@
+// --- LOCAL STORAGE ---
+function saveGame() {
+    let state = {
+        coins, energy, maxEnergy, diamonds, musicOn,
+        products, tasks, taskRewardCollected, fieldsOwned
+    };
+    localStorage.setItem("farmgame_save", JSON.stringify(state));
+}
+function loadGame() {
+    let state = localStorage.getItem("farmgame_save");
+    if (!state) return false;
+    try {
+        state = JSON.parse(state);
+        coins = state.coins ?? 500;
+        energy = state.energy ?? 25;
+        maxEnergy = state.maxEnergy ?? 25;
+        diamonds = state.diamonds ?? 10;
+        musicOn = state.musicOn ?? true;
+        products = state.products ?? products;
+        tasks = state.tasks ?? tasks;
+        taskRewardCollected = state.taskRewardCollected ?? false;
+        fieldsOwned = state.fieldsOwned ?? 1;
+        updateCoins(coins);
+        updateEnergy(energy);
+        updateDiamonds(diamonds);
+        return true;
+    } catch { return false; }
+}
+
 // --- GAME STATE ---
 let coins = 500;
 let energy = 25;
@@ -42,6 +71,51 @@ function updateDiamonds(newVal) {
 updateCoins(coins);
 updateEnergy(energy);
 updateDiamonds(diamonds);
+
+// --- START MENU FUNCTIONS ---
+function showStartMenu() {
+    document.getElementById('gameStartMenu').style.display = "flex";
+    document.querySelector('.top-bars').style.display = "none";
+    document.querySelector('.bottom-bar').style.display = "none";
+}
+function hideStartMenu() {
+    document.getElementById('gameStartMenu').style.display = "none";
+    document.querySelector('.top-bars').style.display = "";
+    document.querySelector('.bottom-bar').style.display = "";
+}
+
+// Show start menu at load
+window.onload = function() { showStartMenu(); }
+
+// Start menu buttons
+document.getElementById('btnPlay').onclick = () => {
+    coins = 500; energy = 25; maxEnergy = 25; diamonds = 10; musicOn = true;
+    products = {
+        wheat: { icon: 'assets/images/iconwheat.png', count: 13, value: 5 },
+        water: { icon: 'assets/images/iconwater.png', count: 8, value: 7 },
+        flour: { icon: 'assets/images/iconflour.png', count: 4, value: 10 },
+        bread: { icon: 'assets/images/iconbread.png', count: 2, value: 30 },
+        eurokuro: { icon: 'assets/images/iconeurokuro.png', count: 0, value: 60 },
+        cookie: { icon: 'assets/images/iconcookie.png', count: 0, value: 100 }
+    };
+    tasks = [
+        { text: "Harvest 1 wheat", done: false },
+        { text: "Reach 150 coins", done: false },
+        { text: "Sell 3 different products", done: false }
+    ];
+    taskRewardCollected = false;
+    fieldsOwned = 1;
+    updateCoins(coins); updateEnergy(energy); updateDiamonds(diamonds);
+    hideStartMenu();
+};
+
+document.getElementById('btnLoad').onclick = () => {
+    if (loadGame()) {
+        hideStartMenu();
+    } else {
+        alert("No save found!");
+    }
+};
 
 // --- MODAL MANAGEMENT ---
 function openModal(type) {
@@ -127,14 +201,19 @@ function openModal(type) {
         modal.innerHTML = `
             <button class="modal-close" onclick="closeModal()">✖️</button>
             <h2 style="margin-top:0;font-size:28px;text-align:center;">Settings</h2>
-            <div style="margin:25px 0 10px 0;display:flex;flex-direction:column;gap:28px;align-items:center;justify-content:center;">
+            <div style="margin:25px 0 10px 0;display:flex;flex-direction:column;gap:22px;align-items:center;justify-content:center;">
                 <button id="musicToggleBtn"
                     style="font-size:22px;padding:12px 44px;background:#ffe3a8;color:#c47b0b;
                     border-radius:15px;border:none;box-shadow:0 2px 10px #f9dc7e77;display:flex;align-items:center;gap:13px;">
                     ${musicOn ? "🎵 Music: ON" : "🔕 Music: OFF"}
                 </button>
+                <button id="saveGameBtn"
+                    style="font-size:21px;padding:10px 36px;background:#fffbe5;color:#875c02;
+                    border-radius:13px;border:none;box-shadow:0 2px 10px #fff0ba9a;display:flex;align-items:center;gap:15px;">
+                    💾 Save Game
+                </button>
             </div>
-            <div style="margin-top:20px;text-align:center;color:#aa6e11;font-size:15px;opacity:.75;">
+            <div style="margin-top:16px;text-align:center;color:#aa6e11;font-size:15px;opacity:.75;">
                 All your settings are saved automatically.
             </div>
         `;
@@ -143,6 +222,11 @@ function openModal(type) {
                 musicOn = !musicOn;
                 document.getElementById('musicToggleBtn').textContent =
                     musicOn ? "🎵 Music: ON" : "🔕 Music: OFF";
+            };
+            document.getElementById('saveGameBtn').onclick = () => {
+                saveGame();
+                document.getElementById('saveGameBtn').innerHTML = "✅ Saved!";
+                setTimeout(()=>{ document.getElementById('saveGameBtn').innerHTML = "💾 Save Game"; }, 1200);
             };
         }, 60);
     }

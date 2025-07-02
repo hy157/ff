@@ -3,7 +3,6 @@ let coins = 500;
 let energy = 25;
 let maxEnergy = 25;
 let diamonds = 10;
-let soundOn = true;
 let musicOn = true;
 let products = {
     wheat: { icon: 'assets/images/iconwheat.png', count: 13, value: 5 },
@@ -127,16 +126,25 @@ function openModal(type) {
         modal.classList.add('modal-orange');
         modal.innerHTML = `
             <button class="modal-close" onclick="closeModal()">✖️</button>
-            <h2 style="margin-top:0;font-size:28px;">Settings</h2>
-            <div style="margin-top:18px;display:flex;flex-direction:column;gap:20px;align-items:center;">
-                <button id="soundToggleBtn" style="font-size:20px;padding:10px 35px;background:#ffe3a8;color:#c47b0b;border-radius:12px;border:none;">
-                    ${soundOn ? "🔊 Sound: On" : "🔇 Sound: Off"}
-                </button>
-                <button id="musicToggleBtn" style="font-size:20px;padding:10px 35px;background:#ffe3a8;color:#c47b0b;border-radius:12px;border:none;">
-                    ${musicOn ? "🎵 Music: On" : "🔕 Music: Off"}
+            <h2 style="margin-top:0;font-size:28px;text-align:center;">Settings</h2>
+            <div style="margin:25px 0 10px 0;display:flex;flex-direction:column;gap:28px;align-items:center;justify-content:center;">
+                <button id="musicToggleBtn"
+                    style="font-size:22px;padding:12px 44px;background:#ffe3a8;color:#c47b0b;
+                    border-radius:15px;border:none;box-shadow:0 2px 10px #f9dc7e77;display:flex;align-items:center;gap:13px;">
+                    ${musicOn ? "🎵 Music: ON" : "🔕 Music: OFF"}
                 </button>
             </div>
+            <div style="margin-top:20px;text-align:center;color:#aa6e11;font-size:15px;opacity:.75;">
+                All your settings are saved automatically.
+            </div>
         `;
+        setTimeout(()=>{
+            document.getElementById('musicToggleBtn').onclick = () => {
+                musicOn = !musicOn;
+                document.getElementById('musicToggleBtn').textContent =
+                    musicOn ? "🎵 Music: ON" : "🔕 Music: OFF";
+            };
+        }, 60);
     }
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
@@ -197,20 +205,6 @@ function openModal(type) {
                 setTimeout(()=>{buyBtn.textContent = "Buy";},900);
             }
         });
-    }
-
-    // Settings: sound/music toggle
-    if (type === 'settings') {
-        setTimeout(()=>{
-            document.getElementById('soundToggleBtn').onclick = () => {
-                soundOn = !soundOn;
-                document.getElementById('soundToggleBtn').textContent = soundOn ? "🔊 Sound: On" : "🔇 Sound: Off";
-            };
-            document.getElementById('musicToggleBtn').onclick = () => {
-                musicOn = !musicOn;
-                document.getElementById('musicToggleBtn').textContent = musicOn ? "🎵 Music: On" : "🔕 Music: Off";
-            };
-        }, 60);
     }
 }
 

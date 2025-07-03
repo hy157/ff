@@ -19,7 +19,7 @@ const binalarStore = [
 ];
 let harita = document.getElementById("harita");
 
-// ------- OYUN GİRİŞ EKRANI -------
+// ------- AÇILIŞ EKRANI -------
 function splashUpdate() {
   let kayıt = localStorage.getItem('tarimSave');
   let loadBtn = document.getElementById('loadBtn');
@@ -27,7 +27,7 @@ function splashUpdate() {
 }
 function hideSplash() {
   document.getElementById("splash").style.display = "none";
-  document.getElementById("game-area").style.display = "block"; // KODUN KRİTİK KISMI!
+  document.getElementById("game-area").style.display = "block";
   startMusic();
   updateInfoBar();
   drawHarita();
@@ -75,6 +75,7 @@ function drawHarita() {
 function createObjectEl(obj, tip) {
   let div = document.createElement("div");
   div.className = "object " + tip;
+  div.style.position = "absolute";
   div.style.left = (obj.x) + "vw";
   div.style.top = (obj.y) + "vh";
   div.dataset.id = obj.id;
@@ -85,6 +86,8 @@ function createObjectEl(obj, tip) {
   else if (obj.type==="oven") img.src = "assets/images/oven.png";
   else if (obj.type==="well") img.src = "assets/images/waterwell.png";
   img.alt = tip;
+  img.style.width = "14vw";
+  img.style.maxWidth = "64px";
   div.appendChild(img);
   // Label
   let lbl = document.createElement("div");
@@ -119,10 +122,11 @@ function showFloatingReward(xvw, yvh, urun) {
   div.style.top = (yvh-3)+"vh";
   div.style.zIndex = "30";
   div.style.animation = "fadein .9s";
-  div.innerHTML = `<img src="assets/images/icon${urun}.png" style="width:33px;display:block;"><span style="color:#724c11;font-weight:bold;font-size:14px;">+1</span>`;
+  div.innerHTML = `<img src="assets/images/icon${urun}.png" style="width:8vw;min-width:24px;display:block;"><span style="color:#724c11;font-weight:bold;font-size:4vw;">+1</span>`;
   harita.appendChild(div);
   setTimeout(()=>div.remove(), 900);
 }
+// --- Uzun bas-sürükle (long press-drag) ---
 function enableDrag(div, obj, tip) {
   let startX, startY, offsetX, offsetY, dragging=false, longPress;
   div.addEventListener('touchstart', function(e) {
@@ -165,17 +169,18 @@ function openBarn() {
   let html = `<div class="modal-panel">
     <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Ürünleri Sat</h3>
-    <table style="width:98%;margin:0 auto;font-size:15px;">
-      <tr><th>Ürün</th><th>Adet</th><th>Birim Fiyat</th><th>Sat</th></tr>`;
+    <div style="overflow-x:auto;">
+    <table style="width:100%;margin:0 auto;font-size:4vw;min-width:270px;">
+      <tr><th>Ürün</th><th>Adet</th><th>Fiyat</th><th>Sat</th></tr>`;
   ürünler.forEach(u=>{
     html += `<tr>
-      <td><img src="assets/images/${u.icon}" style="width:27px;"> ${u.label}</td>
+      <td><img src="assets/images/${u.icon}" style="width:7vw;min-width:24px;"> ${u.label}</td>
       <td>${state[u.key]}</td>
-      <td><img src="assets/images/icongold.png" style="width:19px;"> ${u.price}</td>
-      <td><button onclick="sellProduct('${u.key}',${u.price})" style='padding:2px 9px;border-radius:8px;border:none;background:#ffe083;'>Sat</button></td>
+      <td><img src="assets/images/icongold.png" style="width:6vw;min-width:19px;"> ${u.price}</td>
+      <td><button onclick="sellProduct('${u.key}',${u.price})" style='padding:1vw 2vw;border-radius:8px;border:none;background:#ffe083;font-size:3.2vw;'>Sat</button></td>
     </tr>`;
   });
-  html += `</table></div>`;
+  html += `</table></div></div>`;
   modal.innerHTML = html;
   document.body.appendChild(modal);
 }
@@ -195,23 +200,23 @@ function openStore() {
   let html = `<div class="modal-panel">
     <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Store</h3>
-    <div style="margin:6px 0 12px 0;">
+    <div style="margin:2vw 0 3vw 0;">
       <strong>Tarla satın al:</strong><br>
-      <button onclick="buyField()" ${state.tarlalar.length>=state.maxTarlalar?'disabled style="opacity:0.5;"':''}>
-        <img src="assets/images/field.png" style="width:28px;vertical-align:middle;"> 
-        12 <img src="assets/images/icongold.png" style="width:17px;">
+      <button onclick="buyField()" ${state.tarlalar.length>=state.maxTarlalar?'disabled style="opacity:0.5;"':''} style="padding:1vw 4vw;font-size:4vw;border-radius:7px;margin:1vw;">
+        <img src="assets/images/field.png" style="width:7vw;vertical-align:middle;"> 
+        12 <img src="assets/images/icongold.png" style="width:5vw;">
       </button>
-      <span style="font-size:13px;color:#906;">(${state.tarlalar.length}/${state.maxTarlalar})</span>
+      <span style="font-size:3vw;color:#906;">(${state.tarlalar.length}/${state.maxTarlalar})</span>
     </div>
-    <div style="margin:8px 0 6px 0;">
+    <div style="margin:2vw 0 2vw 0;">
       <strong>Bina satın al:</strong>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">`;
+      <div style="display:flex;gap:3vw;justify-content:center;flex-wrap:wrap;">`;
   binalarStore.forEach(b=>{
-    html += `<div style="display:inline-block;">
-      <button onclick="buyBuilding('${b.type}',${b.price})" style="padding:6px 9px;border-radius:9px;border:none;background:#ffe083;">
-        <img src="assets/images/${b.icon}" style="width:30px;vertical-align:middle;"> 
+    html += `<div style="display:inline-block;margin:1vw;">
+      <button onclick="buyBuilding('${b.type}',${b.price})" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3.2vw;">
+        <img src="assets/images/${b.icon}" style="width:7vw;vertical-align:middle;"> 
         ${b.label} <br>
-        <img src="assets/images/icongold.png" style="width:15px;">${b.price}
+        <img src="assets/images/icongold.png" style="width:4vw;">${b.price}
       </button>
     </div>`;
   });
@@ -241,7 +246,7 @@ function openTasks() {
   let html = `<div class="modal-panel">
     <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Görevler</h3>
-    <ul style="padding:0 12px;text-align:left;">
+    <ul style="padding:0 3vw;text-align:left;font-size:3.6vw;">
       <li>2 ekmek hasat et (Şu an: <b>${state.bread}</b>)</li>
       <li>3 un sat (<b>${state.flour}</b> sahip)</li>
       <li>En az 3 tarla sahibi ol (Şu an: <b>${state.tarlalar.length}</b>)</li>
@@ -254,7 +259,15 @@ function openTasks() {
 
 // ------- MAP (bilgi modalı) -------
 function openMap() {
-  alert("Harita: Tarlaları ve binaları uzun basıp istediğin yere taşıyabilirsin!");
+  let modal = document.createElement("div");
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
+    <h3>Harita</h3>
+    <div style="font-size:4vw;">Tarlaları ve binaları uzun basıp istediğin yere taşıyabilirsin!</div>
+  </div>`;
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
 }
 
 // ------- AYARLAR MODAL -------
@@ -264,14 +277,14 @@ document.getElementById("btnSettings").onclick = function() {
   let html = `<div class="modal-panel">
     <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Ayarlar</h3>
-    <div style="margin:17px 0 7px 0;">
-      <label style="font-size:16px;">
-        <input type="checkbox" id="musicCheck" ${müzikAçık?'checked':''} style="transform:scale(1.3);vertical-align:middle;margin-right:6px;">
+    <div style="margin:4vw 0 2vw 0;">
+      <label style="font-size:4vw;">
+        <input type="checkbox" id="musicCheck" ${müzikAçık?'checked':''} style="transform:scale(1.5);vertical-align:middle;margin-right:3vw;">
         Müzik Açık
       </label>
     </div>
-    <button onclick="saveGame()" style="margin-top:12px;padding:8px 27px;font-size:18px;background:#ffdd75;border:none;border-radius:8px;color:#744a0a;font-weight:bold;">Kayıt Et</button>
-    <div style="font-size:12px;color:#bb9500;margin-top:7px;">Tüm oyun kaydedilir.</div>
+    <button onclick="saveGame()" style="margin-top:3vw;padding:2vw 7vw;font-size:4vw;background:#ffdd75;border:none;border-radius:8px;color:#744a0a;font-weight:bold;">Kayıt Et</button>
+    <div style="font-size:3vw;color:#bb9500;margin-top:2vw;">Tüm oyun kaydedilir.</div>
   </div>`;
   modal.innerHTML = html;
   document.body.appendChild(modal);
@@ -292,3 +305,4 @@ document.getElementById("btnMap").onclick = openMap;
 
 // ------- Mobil scroll engelle -----
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });
+

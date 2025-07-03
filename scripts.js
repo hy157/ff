@@ -21,14 +21,13 @@ let harita = document.getElementById("harita");
 
 // ------- OYUN GİRİŞ EKRANI -------
 function splashUpdate() {
-  // Kayıt var mı kontrol et
   let kayıt = localStorage.getItem('tarimSave');
   let loadBtn = document.getElementById('loadBtn');
   loadBtn.disabled = !kayıt;
 }
 function hideSplash() {
   document.getElementById("splash").style.display = "none";
-  document.getElementById("game-area").style.display = "";
+  document.getElementById("game-area").style.display = "block"; // KODUN KRİTİK KISMI!
   startMusic();
   updateInfoBar();
   drawHarita();
@@ -106,7 +105,6 @@ function tarlayaTikla(id) {
   if (!obj) return;
   if (state.energy < 1) { alert("Enerjin yok!"); return;}
   state.energy--;
-  // Rastgele ürün ver:
   let urunler = ["wheat","bread","cookie","flour"];
   let urun = urunler[Math.floor(Math.random()*urunler.length)];
   state[urun]++;
@@ -125,7 +123,6 @@ function showFloatingReward(xvw, yvh, urun) {
   harita.appendChild(div);
   setTimeout(()=>div.remove(), 900);
 }
-// --- Uzun bas-sürükle (long press-drag) ---
 function enableDrag(div, obj, tip) {
   let startX, startY, offsetX, offsetY, dragging=false, longPress;
   div.addEventListener('touchstart', function(e) {
@@ -255,7 +252,7 @@ function openTasks() {
   document.body.appendChild(modal);
 }
 
-// ------- MAP (sadece bilgi veriyor) -------
+// ------- MAP (bilgi modalı) -------
 function openMap() {
   alert("Harita: Tarlaları ve binaları uzun basıp istediğin yere taşıyabilirsin!");
 }
@@ -293,13 +290,5 @@ document.getElementById("btnStore").onclick = openStore;
 document.getElementById("btnTasks").onclick = openTasks;
 document.getElementById("btnMap").onclick = openMap;
 
-// ------- OYUN BAŞLANGICI -------
-function startIfAuto() {
-  // otomatik başlama yok, splash ekranında bekle
-}
-updateInfoBar();
-drawHarita();
-
 // ------- Mobil scroll engelle -----
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });
-

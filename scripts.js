@@ -264,6 +264,8 @@ function enableDrag(div, obj, tip) {
 }
 
 // Menü butonları (örnek)
+document.getElementById("btnBarn").onclick = openBarn;
+document.getElementById("btnStore").onclick = openStore;
 document.getElementById("btnBarn").onclick = function() { alert("Ürünler: Wheat=" + state.wheat); };
 document.getElementById("btnStore").onclick = function() { 
   if(state.tarlalar.length>=state.maxTarlalar) return alert("Daha fazla tarla alamazsın.");
@@ -299,6 +301,91 @@ window.saveGame = function() {
   localStorage.setItem('tarimSave', JSON.stringify(state));
   alert("Kayıt başarılı!");
 }
+function openBarn() {
+  // Eğer başka modal varsa kaldır:
+  document.querySelectorAll(".modal-bg").forEach(x=>x.remove());
+  let modal = document.createElement("div");
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
+    <h3>Ürünleri Sat</h3>
+    <div style="overflow-x:auto;">
+    <table style="width:100%;margin:0 auto;font-size:4vw;min-width:180px;">
+      <tr><th>Ürün</th><th>Adet</th><th>Fiyat</th><th>Sat</th></tr>
+      <tr>
+        <td><img src="assets/images/iconwheat.png" style="width:7vw;min-width:22px;"> Buğday</td>
+        <td>${state.wheat}</td>
+        <td><img src="assets/images/icongold.png" style="width:5vw;min-width:18px;"> 3</td>
+        <td><button onclick="sellProduct('wheat',3)" style='padding:1vw 2vw;border-radius:8px;border:none;background:#ffe083;font-size:3vw;'>Sat</button></td>
+      </tr>
+    </table></div></div>`;
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+}
+window.sellProduct = function(key, price) {
+  if(state[key]<1) return;
+  state[key]--;
+  state.gold += price;
+  updateInfoBar();
+  document.querySelector('.modal-bg').remove();
+  openBarn();
+};
+function openStore() {
+  document.querySelectorAll(".modal-bg").forEach(x=>x.remove());
+  let modal = document.createElement("div");
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
+    <h3>Store</h3>
+    <div style="margin:2vw 0 3vw 0;">
+      <strong>Tarla satın al:</strong><br>
+      <button onclick="buyField()" ${state.tarlalar.length>=state.maxTarlalar?'disabled style="opacity:0.5;"':''} style="padding:1vw 4vw;font-size:4vw;border-radius:7px;margin:1vw;">
+        <img src="assets/images/field.png" style="width:14vw;vertical-align:middle;"> 
+        12 <img src="assets/images/icongold.png" style="width:5vw;">
+      </button>
+      <span style="font-size:3vw;color:#906;">(${state.tarlalar.length}/${state.maxTarlalar})</span>
+    </div>
+    <div style="margin:2vw 0 2vw 0;">
+      <strong>Bina satın al:</strong>
+      <div style="display:flex;gap:3vw;justify-content:center;flex-wrap:wrap;">
+        <div>
+          <button onclick="buyBuilding('windmill',25)" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
+            <img src="assets/images/windmill.png" style="width:13vw;vertical-align:middle;"> Değirmen<br>
+            <img src="assets/images/icongold.png" style="width:4vw;">25
+          </button>
+        </div>
+        <div>
+          <button onclick="buyBuilding('oven',25)" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
+            <img src="assets/images/oven.png" style="width:13vw;vertical-align:middle;"> Fırın<br>
+            <img src="assets/images/icongold.png" style="width:4vw;">25
+          </button>
+        </div>
+        <div>
+          <button onclick="buyBuilding('well',10)" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
+            <img src="assets/images/waterwell.png" style="width:13vw;vertical-align:middle;"> Kuyu<br>
+            <img src="assets/images/icongold.png" style="width:4vw;">10
+          </button>
+        </div>
+      </div>
+    </div></div>`;
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+}
+window.buyField = function() {
+  if(state.gold<12 || state.tarlalar.length>=state.maxTarlalar) return;
+  state.gold -= 12;
+  state.tarlalar.push({id:state.nextId++, x:30+Math.random()*30, y:38+Math.random()*20});
+  updateInfoBar(); drawHarita();
+  document.querySelector('.modal-bg').remove();
+}
+window.buyBuilding = function(type, price) {
+  if(state.gold<price) return;
+  state.gold -= price;
+  state.binalar.push({id:state.nextId++, type, x:30+Math.random()*30, y:22+Math.random()*38});
+  updateInfoBar(); drawHarita();
+  document.querySelector('.modal-bg').remove();
+}
+
 
 // Mobil scroll engelle
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });

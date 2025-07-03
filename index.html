@@ -19,81 +19,80 @@
       background: url('assets/images/background.png') center top/cover no-repeat;
       overflow: hidden;
     }
-    .harita-canvas {
-      position: absolute; top: 0; left: 0;
-      width: 100vw; height: calc(100vh - 64px);
-      overflow: visible;
-      z-index: 1;
+    /* ÜST BAR */
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 11px;
+      padding: 7px 10px 2px 8px;
+      background: #fffdeeea;
+      z-index: 101;
+      box-shadow: 0 2px 16px #0001;
+      height: 45px;
+      border-radius: 0 0 14px 14px;
+      font-size: 18px;
     }
-    .object {
-      position: absolute;
-      touch-action: none;
-      z-index: 2;
-      will-change: transform;
-      user-select: none;
-      transition: box-shadow .2s;
+    .top-bar .bar-item {
+      display: flex; align-items: center; gap: 4px;
+      font-weight: 700; color: #68431b;
+      background: #f7c33e35; border-radius: 7px; padding: 3px 9px;
     }
-    .object.selected {
-      box-shadow: 0 0 10px 4px #fc0a;
-      z-index: 10;
+    .top-bar .bar-item img { width: 25px; height: 25px; }
+    .top-bar .settings-btn {
+      margin-left: auto;
+      background: none; border: none; outline: none;
+      cursor: pointer; border-radius: 8px;
+      padding: 4px 8px;
     }
-    .object img {
-      width: 76px; max-width: 18vw; min-width: 48px;
-      pointer-events: none;
-      touch-action: none;
-      display: block;
-    }
-    .object.tarla img { width: 68px; }
-    .object.bina img { width: 68px; }
-    .object-label {
-      text-align: center;
-      background: #fff6;
-      color: #5b420c;
-      font-size: 13px;
-      border-radius: 8px;
-      padding: 1px 5px;
-      margin-top: -3px;
-      pointer-events: none;
-    }
-    /* Barn modal */
-    .modal, .store-modal, .tasks-modal {
-      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(40,40,40,0.26);
+    .top-bar .settings-btn img { width: 28px; height: 28px;}
+    /* ARKA PLAN MODALLAR */
+    .modal-bg {
+      position: fixed; left:0; top:0; width:100vw; height:100vh;
+      background: rgba(0,0,0,0.18);
+      z-index: 2002;
       display: flex; align-items: center; justify-content: center;
-      z-index: 1000;
-      animation: fadein .3s;
+      animation: fadein .4s;
     }
-    .modal-content, .store-content, .tasks-content {
+    .modal-panel {
       background: #fffbe9;
-      border-radius: 15px;
-      padding: 20px 15px 10px 15px;
-      min-width: 270px; max-width: 92vw;
+      border-radius: 18px;
+      padding: 26px 16px 20px 16px;
+      min-width: 230px; max-width: 93vw;
       box-shadow: 0 3px 32px #0002;
-      position: relative;
-      text-align: center;
+      position: relative; text-align: center;
     }
     .close-btn {
       position: absolute; right: 13px; top: 13px; background: #ffe093;
       border: none; border-radius: 50%; width: 31px; height: 31px;
       font-size: 20px; font-weight: bold; color: #bc7200; cursor: pointer;
     }
-    /* Info bar */
-    .info-bar {
-      position: absolute;
-      top: 8px; left: 0; width: 100vw; z-index: 20;
-      display: flex; gap: 12px; justify-content: center; align-items: center;
-      flex-wrap: wrap;
-      pointer-events: none;
+    /* Açılış ekranı */
+    .splash-bg {
+      position: fixed; left:0;top:0;width:100vw;height:100vh;z-index:3000;
+      background: url('assets/images/background.png') center top/cover no-repeat;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      animation: fadein .8s;
     }
-    .info-item {
-      display: flex; align-items: center; gap: 4px;
-      font-size: 17px; color: #543909; font-weight: 600;
-      background: #f5eab7cc; border-radius: 7px;
-      padding: 2px 7px;
-      pointer-events: auto;
+    .splash-panel {
+      background: #fffcece6; border-radius: 18px; box-shadow:0 4px 42px #0002;
+      padding: 24px 20px 30px 20px; text-align:center; min-width:210px; max-width:95vw;
+      display: flex; flex-direction: column; align-items: center;
     }
-    .info-item img { width: 24px; height: 24px; }
-    /* Bottom bar */
+    .splash-panel img { width: 80px; margin-bottom: 15px;}
+    .play-btn, .load-btn {
+      background: #f7c33e; color: #53340a;
+      font-weight: bold; border: none; border-radius: 7px;
+      box-shadow: 0 2px 8px #0001;
+      font-size: 21px; padding: 12px 30px; margin: 10px 0 0 0;
+      cursor: pointer; transition: background .2s;
+    }
+    .play-btn:active, .load-btn:active { background: #e0b123;}
+    .load-btn:disabled { background:#eee2b6; color:#baa755; cursor:default;}
+    /* Alt Menü */
     .bottom-menu {
       position: fixed; bottom: 0; left: 0; width: 100vw;
       display: flex; justify-content: space-around; align-items: center;
@@ -108,27 +107,32 @@
       background: none; border: none; outline: none; cursor: pointer;
     }
     .menu-btn img { width: 32px; height: 32px; margin-bottom: 2px; pointer-events: none; }
+    /* HARİTA KISMI */
+    .harita-canvas {
+      position: absolute; top: 45px; left: 0;
+      width: 100vw; height: calc(100vh - 108px);
+      overflow: visible;
+      z-index: 1;
+    }
+    /* Mobil */
     @media (max-width: 600px) {
-      .object img, .object.tarla img, .object.bina img { width: 16vw; min-width: 44px; max-width: 72px; }
-      .modal-content, .store-content, .tasks-content { padding: 12px 6px 5px 6px; min-width: 68vw;}
-      .info-item { font-size: 16px; }
+      .harita-canvas { height: calc(100vh - 93px);}
       .menu-btn img { width: 25px; height: 25px;}
       .bottom-menu { height: 49px; }
-      .harita-canvas { height: calc(100vh - 52px);}
+      .top-bar { height: 37px; font-size:15px;}
+      .top-bar .settings-btn img { width: 23px; height:23px;}
+      .splash-panel { padding:14px 7px 18px 7px; min-width:58vw;}
     }
     @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
   </style>
 </head>
 <body>
-  <div id="game-area">
-    <div class="info-bar" id="infoBar">
-      <div class="info-item"><img src="assets/images/iconenergy.png"> <span id="energyVal">5</span></div>
-      <div class="info-item"><img src="assets/images/icongold.png"> <span id="goldVal">0</span></div>
-      <div class="info-item"><img src="assets/images/iconwheat.png"> <span id="wheatVal">0</span></div>
-      <div class="info-item"><img src="assets/images/iconbread.png"> <span id="breadVal">0</span></div>
-      <div class="info-item"><img src="assets/images/iconcookie.png"> <span id="cookieVal">0</span></div>
-      <div class="info-item"><img src="assets/images/iconflour.png"> <span id="flourVal">0</span></div>
-      <div class="info-item"><img src="assets/images/iconwater.png"> <span id="waterVal">0</span></div>
+  <div id="game-area" style="display:none;">
+    <div class="top-bar" id="topBar">
+      <div class="bar-item"><img src="assets/images/icongold.png"> <span id="goldVal">0</span></div>
+      <div class="bar-item"><img src="assets/images/iconenergy.png"> <span id="energyVal">5</span></div>
+      <div class="bar-item"><img src="assets/images/icondiamond.png"> <span id="diamondVal">0</span></div>
+      <button class="settings-btn" id="btnSettings"><img src="assets/images/iconsettings.png"></button>
     </div>
     <div class="harita-canvas" id="harita"></div>
     <div class="bottom-menu">
@@ -138,6 +142,18 @@
       <button class="menu-btn" id="btnMap"><img src="assets/images/iconmap.png" alt="Map"><span>Map</span></button>
     </div>
   </div>
+  <!-- Splash (açılış) -->
+  <div class="splash-bg" id="splash">
+    <div class="splash-panel">
+      <img src="assets/images/iconbarn.png" alt="Oyun Başlangıç">
+      <div style="font-size:29px;color:#7d4a00;font-weight:700;margin-bottom:6px;">Tarım Oyunu</div>
+      <div style="font-size:16px;color:#855a12;">Tarlana başla, sat, üret, büyüt!</div>
+      <button class="play-btn" id="playNewBtn">Yeni Oyun</button>
+      <button class="load-btn" id="loadBtn">Kayıttan Oyna</button>
+    </div>
+  </div>
+  <!-- Müzik -->
+  <audio id="gameMusic" src="assets/music/ambient.mp3" loop preload="auto"></audio>
   <script src="scripts.js"></script>
 </body>
 </html>

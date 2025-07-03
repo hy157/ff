@@ -90,7 +90,14 @@
       overflow: visible;
       z-index: 1;
     }
-    .object-label { font-size:3.2vw; margin-top: -2vw;}
+    /* Tarla üstü ekim/hasat menüsü */
+    #field-menu {
+      position: absolute; background: rgba(255,255,255,0.88);
+      border-radius: 13px; padding: 1vw 2vw; box-shadow: 0 2px 12px #0002;
+      display: flex; justify-content: center; align-items: center;
+      gap: 4vw; width: 41vw; pointer-events: auto;
+      z-index: 999;
+    }
     @media (max-width: 460px) {
       .modal-panel { min-width:95vw; padding:3vw 2vw 4vw 2vw;}
       .harita-canvas { height:calc(100vh - 29vw);}

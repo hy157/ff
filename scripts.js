@@ -7,16 +7,15 @@ let defaultState = {
   cookie: 0,
   flour: 0,
   water: 0,
-  tarlalar: [],
+  tarlalar: [{id: 1, x: 40, y: 50, state:"empty", growth:0}], // BAŞLANGIÇTA BİR BOŞ TARLA
   binalar: [],
-  nextId: 1,
+  nextId: 2, // İlk tarlamız 1 id'siyle başladı!
   maxTarlalar: 4
 };
 let state = JSON.parse(JSON.stringify(defaultState));
 let müzikAçık = true;
 let harita = document.getElementById("harita");
 
-// Açılış ekranı
 function splashUpdate() {
   let kayıt = localStorage.getItem('tarimSave');
   let loadBtn = document.getElementById('loadBtn');
@@ -42,7 +41,6 @@ document.getElementById("loadBtn").onclick = () => {
 };
 splashUpdate();
 
-// Müzik
 let musicEl = document.getElementById("gameMusic");
 function startMusic() { if(müzikAçık) musicEl.play(); }
 function stopMusic() { musicEl.pause(); musicEl.currentTime=0; }
@@ -52,14 +50,12 @@ function toggleMusic(val) {
   else stopMusic();
 }
 
-// Bar güncelle
 function updateInfoBar() {
   document.getElementById("energyVal").textContent = state.energy;
   document.getElementById("goldVal").textContent = state.gold;
   document.getElementById("diamondVal").textContent = state.diamond || 0;
 }
 
-// Tüm tarlaları ve binaları çiz
 function drawHarita() {
   harita.innerHTML = '';
   state.tarlalar.forEach(obj => {
@@ -70,7 +66,6 @@ function drawHarita() {
   });
 }
 
-// Tarla ve bina nesnesi oluştur
 function createObjectEl(obj, tip) {
   let div = document.createElement("div");
   div.className = "object " + tip;
@@ -82,7 +77,6 @@ function createObjectEl(obj, tip) {
   let img = document.createElement("img");
 
   if (tip === "tarla") {
-    // Tarla aşamasına göre resim
     let src = "field.png";
     if (obj.state === "empty" || !obj.state) src = "field.png";
     else if (obj.state === "planted" && obj.growth < 8) src = "fieldfide.png";
@@ -95,7 +89,6 @@ function createObjectEl(obj, tip) {
     img.style.display = "block";
     div.appendChild(img);
 
-    // Tarla yazısı yok!
     div.onclick = (e) => {
       e.stopPropagation();
       showFieldMenu(obj, div);
@@ -105,9 +98,9 @@ function createObjectEl(obj, tip) {
     else if (obj.type === "oven") img.src = "assets/images/oven.png";
     else if (obj.type === "well") img.src = "assets/images/waterwell.png";
     img.alt = tip;
-    img.style.width = "28vw";
-    img.style.maxWidth = "128px";
-    img.style.minWidth = "70px";
+    img.style.width = "56vw";  // 2x büyük
+    img.style.maxWidth = "256px";
+    img.style.minWidth = "110px";
     div.appendChild(img);
   }
 
@@ -115,7 +108,6 @@ function createObjectEl(obj, tip) {
   return div;
 }
 
-// Tarla üstü ekim/hasat menüsü
 function showFieldMenu(tarlaObj, parentDiv) {
   if (document.getElementById("field-menu")) return;
   let menu = document.createElement("div");
@@ -156,7 +148,6 @@ function showFieldMenu(tarlaObj, parentDiv) {
   }
 }
 
-// Tarla ekim
 function plantSeed(tarlaObj) {
   if (state.gold < 1) return alert("Yeterli coin yok!");
   if (state.energy < 1) return alert("Yeterli enerji yok!");
@@ -169,7 +160,6 @@ function plantSeed(tarlaObj) {
   startGrowth(tarlaObj);
 }
 
-// Tarla gelişimi (16 saniye)
 function startGrowth(tarlaObj) {
   tarlaObj.timer = setInterval(() => {
     if (!tarlaObj.state || tarlaObj.state !== "planted") { clearInterval(tarlaObj.timer); return; }
@@ -183,7 +173,6 @@ function startGrowth(tarlaObj) {
   }, 1000);
 }
 
-// Hasat + animasyon
 function harvestField(tarlaObj, parentDiv) {
   tarlaObj.state = "empty";
   tarlaObj.growth = 0;
@@ -194,7 +183,6 @@ function harvestField(tarlaObj, parentDiv) {
   drawHarita();
 }
 
-// Hasat animasyonu
 function animateWheatAndCoin(parentDiv) {
   let wheat = document.createElement("img");
   wheat.src = "assets/images/iconwheat.png";
@@ -265,12 +253,11 @@ function enableDrag(div, obj, tip) {
   });
 }
 
-// BARN - Tüm ürünleri sat!
+// BARN
 function openBarn() {
   document.querySelectorAll(".modal-bg").forEach(x=>x.remove());
   let modal = document.createElement("div");
   modal.className = "modal-bg";
-  // Satılabilir ürünler:
   const urunler = [
     {key:"wheat", label:"Buğday", price: 3, icon:"iconwheat.png"},
     {key:"bread", label:"Ekmek", price: 7, icon:"iconbread.png"},
@@ -305,11 +292,18 @@ window.sellProduct = function(key, price) {
   openBarn();
 };
 
-// STORE - Tarla ve bina al!
+// STORE
 function openStore() {
   document.querySelectorAll(".modal-bg").forEach(x=>x.remove());
   let modal = document.createElement("div");
   modal.className = "modal-bg";
+  // Hangi bina alındıysa tekrar alınamaz
+  let owned = {windmill: false, oven: false, well: false};
+  state.binalar.forEach(b=>{
+    if(b.type==="windmill") owned.windmill = true;
+    if(b.type==="oven") owned.oven = true;
+    if(b.type==="well") owned.well = true;
+  });
   let html = `<div class="modal-panel">
     <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Store</h3>
@@ -325,20 +319,20 @@ function openStore() {
       <strong>Bina satın al:</strong>
       <div style="display:flex;gap:3vw;justify-content:center;flex-wrap:wrap;">
         <div>
-          <button onclick="buyBuilding('windmill',25)" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
-            <img src="assets/images/windmill.png" style="width:13vw;vertical-align:middle;"> Değirmen<br>
+          <button onclick="buyBuilding('windmill',25)" ${owned.windmill?'disabled style="opacity:0.5;"':''} style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
+            <img src="assets/images/windmill.png" style="width:24vw;vertical-align:middle;"> Değirmen<br>
             <img src="assets/images/icongold.png" style="width:4vw;">25
           </button>
         </div>
         <div>
-          <button onclick="buyBuilding('oven',25)" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
-            <img src="assets/images/oven.png" style="width:13vw;vertical-align:middle;"> Fırın<br>
+          <button onclick="buyBuilding('oven',25)" ${owned.oven?'disabled style="opacity:0.5;"':''} style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
+            <img src="assets/images/oven.png" style="width:24vw;vertical-align:middle;"> Fırın<br>
             <img src="assets/images/icongold.png" style="width:4vw;">25
           </button>
         </div>
         <div>
-          <button onclick="buyBuilding('well',10)" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
-            <img src="assets/images/waterwell.png" style="width:13vw;vertical-align:middle;"> Kuyu<br>
+          <button onclick="buyBuilding('well',10)" ${owned.well?'disabled style="opacity:0.5;"':''} style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3vw;">
+            <img src="assets/images/waterwell.png" style="width:24vw;vertical-align:middle;"> Kuyu<br>
             <img src="assets/images/icongold.png" style="width:4vw;">10
           </button>
         </div>
@@ -350,11 +344,13 @@ function openStore() {
 window.buyField = function() {
   if(state.gold<12 || state.tarlalar.length>=state.maxTarlalar) return;
   state.gold -= 12;
-  state.tarlalar.push({id:state.nextId++, x:30+Math.random()*30, y:38+Math.random()*20});
+  state.tarlalar.push({id:state.nextId++, x:30+Math.random()*30, y:38+Math.random()*20, state:"empty", growth:0});
   updateInfoBar(); drawHarita();
   document.querySelector('.modal-bg').remove();
 }
 window.buyBuilding = function(type, price) {
+  let already = state.binalar.find(b=>b.type===type);
+  if(already) return;
   if(state.gold<price) return;
   state.gold -= price;
   state.binalar.push({id:state.nextId++, type, x:30+Math.random()*30, y:22+Math.random()*38});
@@ -362,7 +358,6 @@ window.buyBuilding = function(type, price) {
   document.querySelector('.modal-bg').remove();
 }
 
-// Menü butonları
 document.getElementById("btnBarn").onclick = openBarn;
 document.getElementById("btnStore").onclick = openStore;
 document.getElementById("btnTasks").onclick = function() { alert("Görevler çok yakında!"); };
@@ -393,9 +388,6 @@ window.saveGame = function() {
   alert("Kayıt başarılı!");
 }
 
-// Mobil scroll engelle
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });
-
-// Oyun ilk yüklenince bar ve haritayı güncelle
 updateInfoBar();
 drawHarita();

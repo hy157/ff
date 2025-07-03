@@ -3,10 +3,6 @@ let defaultState = {
   gold: 1000,
   diamond: 0,
   wheat: 0,
-  bread: 0,
-  cookie: 0,
-  flour: 0,
-  water: 0,
   tarlalar: [],
   binalar: [],
   nextId: 1,
@@ -14,17 +10,9 @@ let defaultState = {
 };
 let state = JSON.parse(JSON.stringify(defaultState));
 let müzikAçık = true;
-const ürünler = [
-  {key:"wheat", label:"Buğday", price: 3, icon:"iconwheat.png"}
-];
-const binalarStore = [
-  {type:"windmill", label:"Değirmen", price: 25, icon:"windmill.png"},
-  {type:"oven", label:"Fırın", price: 25, icon:"oven.png"},
-  {type:"well", label:"Kuyu", price: 10, icon:"waterwell.png"}
-];
 let harita = document.getElementById("harita");
 
-// ------- AÇILIŞ EKRANI -------
+// Açılış ekranı
 function splashUpdate() {
   let kayıt = localStorage.getItem('tarimSave');
   let loadBtn = document.getElementById('loadBtn');
@@ -50,7 +38,7 @@ document.getElementById("loadBtn").onclick = () => {
 };
 splashUpdate();
 
-// ------- MÜZİK -----
+// Müzik
 let musicEl = document.getElementById("gameMusic");
 function startMusic() { if(müzikAçık) musicEl.play(); }
 function stopMusic() { musicEl.pause(); musicEl.currentTime=0; }
@@ -60,14 +48,14 @@ function toggleMusic(val) {
   else stopMusic();
 }
 
-// ------- ÜST BAR GÜNCELLE -----
+// Bar güncelle
 function updateInfoBar() {
   document.getElementById("energyVal").textContent = state.energy;
   document.getElementById("goldVal").textContent = state.gold;
   document.getElementById("diamondVal").textContent = state.diamond || 0;
 }
 
-// ------- HARİTA NESNELERİNİ ÇİZ -----
+// Tüm tarlaları ve binaları çiz
 function drawHarita() {
   harita.innerHTML = '';
   state.tarlalar.forEach(obj => {
@@ -78,7 +66,7 @@ function drawHarita() {
   });
 }
 
-// Tarla görseli ve menü
+// Tarla ve bina nesnesi oluştur
 function createObjectEl(obj, tip) {
   let div = document.createElement("div");
   div.className = "object " + tip;
@@ -90,7 +78,7 @@ function createObjectEl(obj, tip) {
   let img = document.createElement("img");
 
   if (tip === "tarla") {
-    // Tarla aşamasına göre resmi seç:
+    // Tarla aşamasına göre resim
     let src = "field.png";
     if (obj.state === "empty" || !obj.state) src = "field.png";
     else if (obj.state === "planted" && obj.growth < 8) src = "fieldfide.png";
@@ -104,8 +92,6 @@ function createObjectEl(obj, tip) {
     div.appendChild(img);
 
     // Tarla yazısı yok!
-
-    // Tıklayınca menü aç
     div.onclick = (e) => {
       e.stopPropagation();
       showFieldMenu(obj, div);
@@ -125,16 +111,14 @@ function createObjectEl(obj, tip) {
   return div;
 }
 
-// Tarla üstü menü
+// Tarla üstü ekim/hasat menüsü
 function showFieldMenu(tarlaObj, parentDiv) {
-  // Zaten açıksa tekrar açmasın
   if (document.getElementById("field-menu")) return;
-
   let menu = document.createElement("div");
   menu.id = "field-menu";
   menu.style.left = parentDiv.style.left;
   menu.style.top = `calc(${parentDiv.style.top} - 13vw)`;
-  // Menü: ekim ya da hasat
+  // Ekim veya hasat
   if (!tarlaObj.state || tarlaObj.state === "empty") {
     let seedBtn = document.createElement("img");
     seedBtn.src = "assets/images/iconseed.png";
@@ -159,8 +143,7 @@ function showFieldMenu(tarlaObj, parentDiv) {
     menu.appendChild(sickleBtn);
   }
   document.body.appendChild(menu);
-
-  // Dışarı tıkla menüyü kapat
+  // Menü dışına tıklayınca kapanır
   setTimeout(()=>{
     document.body.addEventListener("touchstart", removeFieldMenu, {once:true});
     document.body.addEventListener("mousedown", removeFieldMenu, {once:true});
@@ -171,7 +154,7 @@ function showFieldMenu(tarlaObj, parentDiv) {
   }
 }
 
-// Ekim fonksiyonu
+// Tarla ekim
 function plantSeed(tarlaObj) {
   if (state.gold < 1) return alert("Yeterli coin yok!");
   if (state.energy < 1) return alert("Yeterli enerji yok!");
@@ -184,7 +167,7 @@ function plantSeed(tarlaObj) {
   startGrowth(tarlaObj);
 }
 
-// Tarla gelişimi
+// Tarla gelişimi (16 saniye)
 function startGrowth(tarlaObj) {
   tarlaObj.timer = setInterval(() => {
     if (!tarlaObj.state || tarlaObj.state !== "planted") { clearInterval(tarlaObj.timer); return; }
@@ -198,7 +181,7 @@ function startGrowth(tarlaObj) {
   }, 1000);
 }
 
-// Hasat fonksiyonu + animasyon
+// Hasat + animasyon
 function harvestField(tarlaObj, parentDiv) {
   tarlaObj.state = "empty";
   tarlaObj.growth = 0;
@@ -211,7 +194,6 @@ function harvestField(tarlaObj, parentDiv) {
 
 // Hasat animasyonu
 function animateWheatAndCoin(parentDiv) {
-  // Wheat animasyonu
   let wheat = document.createElement("img");
   wheat.src = "assets/images/iconwheat.png";
   wheat.style.position = "fixed";
@@ -224,7 +206,6 @@ function animateWheatAndCoin(parentDiv) {
   wheat.style.opacity = "1";
   document.body.appendChild(wheat);
 
-  // Coin animasyonu
   let coin = document.createElement("img");
   coin.src = "assets/images/icongold.png";
   coin.style.position = "fixed";
@@ -282,21 +263,18 @@ function enableDrag(div, obj, tip) {
   });
 }
 
-// ------- BARN, STORE, TASKS, MAP, AYARLAR (eski şekilde devam ediyor, istersen sadeleştiririz) -------
-// ... (Buraya eski kodun aynı şekilde devam edebilir.)
-
-// ALT MENÜ
-document.getElementById("btnBarn").onclick = openBarn;
-document.getElementById("btnStore").onclick = openStore;
-document.getElementById("btnTasks").onclick = openTasks;
-document.getElementById("btnMap").onclick = openMap;
-document.getElementById("btnSettings").onclick = openSettings;
-
-function openBarn() { alert("Barn: Ürün satışı ve stokları burada görebilirsin."); }
-function openStore() { alert("Store: Tarla ve bina satın alma burada."); }
-function openTasks() { alert("Görevler: Çok yakında!"); }
-function openMap() { alert("Harita: Tarlaları ve binaları taşıyabilirsin."); }
-function openSettings() {
+// Menü butonları (örnek)
+document.getElementById("btnBarn").onclick = function() { alert("Ürünler: Wheat=" + state.wheat); };
+document.getElementById("btnStore").onclick = function() { 
+  if(state.tarlalar.length>=state.maxTarlalar) return alert("Daha fazla tarla alamazsın.");
+  if(state.gold<12) return alert("Yeterli coin yok!");
+  state.gold -= 12;
+  state.tarlalar.push({id:state.nextId++, x:30+Math.random()*30, y:38+Math.random()*20});
+  updateInfoBar(); drawHarita();
+};
+document.getElementById("btnTasks").onclick = function() { alert("Görevler çok yakında!"); };
+document.getElementById("btnMap").onclick = function() { alert("Haritada tarlaları uzun basıp taşıyabilirsin."); };
+document.getElementById("btnSettings").onclick = function() {
   let modal = document.createElement("div");
   modal.className = "modal-bg";
   let html = `<div class="modal-panel">
@@ -325,6 +303,6 @@ window.saveGame = function() {
 // Mobil scroll engelle
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });
 
-// Başlangıç barlarını güncelle
+// Oyun ilk yüklenince bar ve haritayı güncelle
 updateInfoBar();
 drawHarita();

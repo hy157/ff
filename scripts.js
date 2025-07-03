@@ -1,11 +1,10 @@
-// --- Oyun Durumu ---
-let state = {
-  energy: 5, gold: 0, wheat: 0, bread: 0, cookie: 0, flour: 0, water: 0,
-  tarlalar: [], // {id, x, y}
-  binalar: [],  // {id, x, y, type}
-  nextId: 1,
-  maxTarlalar: 4
+// ------- STATE ---------
+let defaultState = {
+  energy: 5, gold: 0, diamond: 0, wheat: 0, bread: 0, cookie: 0, flour: 0, water: 0,
+  tarlalar: [], binalar: [], nextId: 1, maxTarlalar: 4
 };
+let state = JSON.parse(JSON.stringify(defaultState));
+let müzikAçık = true;
 const ürünler = [
   {key:"wheat", label:"Buğday", price: 3, icon:"iconwheat.png"},
   {key:"bread", label:"Ekmek", price: 7, icon:"iconbread.png"},
@@ -19,20 +18,52 @@ const binalarStore = [
   {type:"well", label:"Kuyu", price: 10, icon:"waterwell.png"}
 ];
 let harita = document.getElementById("harita");
-let longPressTimer = null;
 
-// --- UI Güncelleme ---
+// ------- OYUN GİRİŞ EKRANI -------
+function splashUpdate() {
+  // Kayıt var mı kontrol et
+  let kayıt = localStorage.getItem('tarimSave');
+  let loadBtn = document.getElementById('loadBtn');
+  loadBtn.disabled = !kayıt;
+}
+function hideSplash() {
+  document.getElementById("splash").style.display = "none";
+  document.getElementById("game-area").style.display = "";
+  startMusic();
+  updateInfoBar();
+  drawHarita();
+}
+document.getElementById("playNewBtn").onclick = () => {
+  state = JSON.parse(JSON.stringify(defaultState));
+  hideSplash();
+}
+document.getElementById("loadBtn").onclick = () => {
+  let kayıt = localStorage.getItem('tarimSave');
+  if (kayıt) {
+    state = JSON.parse(kayıt);
+    hideSplash();
+  }
+};
+splashUpdate();
+
+// ------- MÜZİK -----
+let musicEl = document.getElementById("gameMusic");
+function startMusic() { if(müzikAçık) musicEl.play(); }
+function stopMusic() { musicEl.pause(); musicEl.currentTime=0; }
+function toggleMusic(val) {
+  müzikAçık = val;
+  if (müzikAçık) startMusic();
+  else stopMusic();
+}
+
+// ------- ÜST BAR GÜNCELLE -----
 function updateInfoBar() {
   document.getElementById("energyVal").textContent = state.energy;
   document.getElementById("goldVal").textContent = state.gold;
-  document.getElementById("wheatVal").textContent = state.wheat;
-  document.getElementById("breadVal").textContent = state.bread;
-  document.getElementById("cookieVal").textContent = state.cookie;
-  document.getElementById("flourVal").textContent = state.flour;
-  document.getElementById("waterVal").textContent = state.water;
+  document.getElementById("diamondVal").textContent = state.diamond || 0;
 }
 
-// --- HARİTA NESNELERİNİ ÇİZ ---
+// ------- HARİTA NESNELERİNİ ÇİZ -----
 function drawHarita() {
   harita.innerHTML = '';
   state.tarlalar.forEach(obj => {
@@ -70,7 +101,6 @@ function createObjectEl(obj, tip) {
   enableDrag(div, obj, tip);
   return div;
 }
-// --- Tarlada Oyun ---
 function tarlayaTikla(id) {
   let obj = state.tarlalar.find(t => t.id === id);
   if (!obj) return;
@@ -84,7 +114,6 @@ function tarlayaTikla(id) {
   drawHarita();
   showFloatingReward(obj.x, obj.y, urun);
 }
-// --- Kayan ödül efekti ---
 function showFloatingReward(xvw, yvh, urun) {
   let div = document.createElement("div");
   div.style.position = "absolute";
@@ -96,12 +125,9 @@ function showFloatingReward(xvw, yvh, urun) {
   harita.appendChild(div);
   setTimeout(()=>div.remove(), 900);
 }
-
 // --- Uzun bas-sürükle (long press-drag) ---
 function enableDrag(div, obj, tip) {
-  let startX, startY, offsetX, offsetY, dragging=false;
-  let moveListener, upListener, longPress;
-
+  let startX, startY, offsetX, offsetY, dragging=false, longPress;
   div.addEventListener('touchstart', function(e) {
     if (e.touches.length !== 1) return;
     startX = e.touches[0].clientX;
@@ -135,12 +161,12 @@ function enableDrag(div, obj, tip) {
   });
 }
 
-// --- Barn / Satış MODAL ---
+// ------- BARN / Satış MODAL -------
 function openBarn() {
   let modal = document.createElement("div");
-  modal.className = "modal";
-  let html = `<div class="modal-content">
-    <button class="close-btn" onclick="this.closest('.modal').remove()">&times;</button>
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Ürünleri Sat</h3>
     <table style="width:98%;margin:0 auto;font-size:15px;">
       <tr><th>Ürün</th><th>Adet</th><th>Birim Fiyat</th><th>Sat</th></tr>`;
@@ -161,16 +187,16 @@ window.sellProduct = function(key, price) {
   state[key]--;
   state.gold += price;
   updateInfoBar();
-  document.querySelector('.modal').remove();
+  document.querySelector('.modal-bg').remove();
   openBarn();
 }
 
-// --- STORE / Satın alma ---
+// ------- STORE / Satın alma -------
 function openStore() {
   let modal = document.createElement("div");
-  modal.className = "store-modal";
-  let html = `<div class="store-content">
-    <button class="close-btn" onclick="this.closest('.store-modal').remove()">&times;</button>
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Store</h3>
     <div style="margin:6px 0 12px 0;">
       <strong>Tarla satın al:</strong><br>
@@ -199,25 +225,24 @@ function openStore() {
 window.buyField = function() {
   if(state.gold<12 || state.tarlalar.length>=state.maxTarlalar) return;
   state.gold -= 12;
-  // Haritanın ortasına ekle
   state.tarlalar.push({id:state.nextId++, x:30+Math.random()*30, y:38+Math.random()*20});
   updateInfoBar(); drawHarita();
-  document.querySelector('.store-modal').remove();
+  document.querySelector('.modal-bg').remove();
 }
 window.buyBuilding = function(type, price) {
   if(state.gold<price) return;
   state.gold -= price;
   state.binalar.push({id:state.nextId++, type, x:30+Math.random()*30, y:22+Math.random()*38});
   updateInfoBar(); drawHarita();
-  document.querySelector('.store-modal').remove();
+  document.querySelector('.modal-bg').remove();
 }
 
-// --- Tasks Modal ---
+// ------- TASKS -------
 function openTasks() {
   let modal = document.createElement("div");
-  modal.className = "tasks-modal";
-  let html = `<div class="tasks-content">
-    <button class="close-btn" onclick="this.closest('.tasks-modal').remove()">&times;</button>
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
     <h3>Görevler</h3>
     <ul style="padding:0 12px;text-align:left;">
       <li>2 ekmek hasat et (Şu an: <b>${state.bread}</b>)</li>
@@ -230,21 +255,51 @@ function openTasks() {
   document.body.appendChild(modal);
 }
 
-// --- Map modal (aslen harita ekranda ama buradan bilgi veririz) ---
+// ------- MAP (sadece bilgi veriyor) -------
 function openMap() {
-  alert("Harita: Tarlaları ve binaları ekranda uzun basıp taşıyabilirsin!");
+  alert("Harita: Tarlaları ve binaları uzun basıp istediğin yere taşıyabilirsin!");
 }
 
-// --- Alt menü butonları ---
+// ------- AYARLAR MODAL -------
+document.getElementById("btnSettings").onclick = function() {
+  let modal = document.createElement("div");
+  modal.className = "modal-bg";
+  let html = `<div class="modal-panel">
+    <button class="close-btn" onclick="this.closest('.modal-bg').remove()">&times;</button>
+    <h3>Ayarlar</h3>
+    <div style="margin:17px 0 7px 0;">
+      <label style="font-size:16px;">
+        <input type="checkbox" id="musicCheck" ${müzikAçık?'checked':''} style="transform:scale(1.3);vertical-align:middle;margin-right:6px;">
+        Müzik Açık
+      </label>
+    </div>
+    <button onclick="saveGame()" style="margin-top:12px;padding:8px 27px;font-size:18px;background:#ffdd75;border:none;border-radius:8px;color:#744a0a;font-weight:bold;">Kayıt Et</button>
+    <div style="font-size:12px;color:#bb9500;margin-top:7px;">Tüm oyun kaydedilir.</div>
+  </div>`;
+  modal.innerHTML = html;
+  document.body.appendChild(modal);
+  document.getElementById("musicCheck").onchange = function() {
+    toggleMusic(this.checked);
+  }
+};
+window.saveGame = function() {
+  localStorage.setItem('tarimSave', JSON.stringify(state));
+  alert("Kayıt başarılı!");
+}
+
+// ------- ALT MENÜ -------
 document.getElementById("btnBarn").onclick = openBarn;
 document.getElementById("btnStore").onclick = openStore;
 document.getElementById("btnTasks").onclick = openTasks;
 document.getElementById("btnMap").onclick = openMap;
 
-// --- Oyun Başlangıcı ---
+// ------- OYUN BAŞLANGICI -------
+function startIfAuto() {
+  // otomatik başlama yok, splash ekranında bekle
+}
 updateInfoBar();
 drawHarita();
 
-// --- Mobil scrollu engelle ---
+// ------- Mobil scroll engelle -----
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });
 

@@ -1,7 +1,17 @@
 // ------- STATE ---------
 let defaultState = {
-  energy: 500, gold: 1000, diamond: 0, wheat: 0, bread: 0, cookie: 0, flour: 0, water: 0,
-  tarlalar: [], binalar: [], nextId: 1, maxTarlalar: 4
+  energy: 5,
+  gold: 1000,     // <--- Burada! Artık başlangıçta 1000 coin var
+  diamond: 0,
+  wheat: 0,
+  bread: 0,
+  cookie: 0,
+  flour: 0,
+  water: 0,
+  tarlalar: [],
+  binalar: [],
+  nextId: 1,
+  maxTarlalar: 4
 };
 let state = JSON.parse(JSON.stringify(defaultState));
 let müzikAçık = true;

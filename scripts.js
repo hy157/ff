@@ -1,7 +1,6 @@
-// ------- STATE ---------
 let defaultState = {
-  energy: 5,
-  gold: 1000,     // <--- Burada! Artık başlangıçta 1000 coin var
+  energy: 1000,
+  gold: 1000,
   diamond: 0,
   wheat: 0,
   bread: 0,
@@ -91,13 +90,15 @@ function createObjectEl(obj, tip) {
   div.dataset.id = obj.id;
   div.dataset.tip = tip;
   let img = document.createElement("img");
+  // 2 KAT BÜYÜK GÖRSELLER
   if (tip==="tarla") img.src = "assets/images/field.png";
   else if (obj.type==="windmill") img.src = "assets/images/windmill.png";
   else if (obj.type==="oven") img.src = "assets/images/oven.png";
   else if (obj.type==="well") img.src = "assets/images/waterwell.png";
   img.alt = tip;
-  img.style.width = "14vw";
-  img.style.maxWidth = "64px";
+  img.style.width = "28vw";
+  img.style.maxWidth = "128px";
+  img.style.minWidth = "70px";
   div.appendChild(img);
   // Label
   let lbl = document.createElement("div");
@@ -213,7 +214,7 @@ function openStore() {
     <div style="margin:2vw 0 3vw 0;">
       <strong>Tarla satın al:</strong><br>
       <button onclick="buyField()" ${state.tarlalar.length>=state.maxTarlalar?'disabled style="opacity:0.5;"':''} style="padding:1vw 4vw;font-size:4vw;border-radius:7px;margin:1vw;">
-        <img src="assets/images/field.png" style="width:7vw;vertical-align:middle;"> 
+        <img src="assets/images/field.png" style="width:14vw;vertical-align:middle;"> 
         12 <img src="assets/images/icongold.png" style="width:5vw;">
       </button>
       <span style="font-size:3vw;color:#906;">(${state.tarlalar.length}/${state.maxTarlalar})</span>
@@ -224,7 +225,7 @@ function openStore() {
   binalarStore.forEach(b=>{
     html += `<div style="display:inline-block;margin:1vw;">
       <button onclick="buyBuilding('${b.type}',${b.price})" style="padding:1vw 3vw;border-radius:9px;border:none;background:#ffe083;font-size:3.2vw;">
-        <img src="assets/images/${b.icon}" style="width:7vw;vertical-align:middle;"> 
+        <img src="assets/images/${b.icon}" style="width:14vw;vertical-align:middle;"> 
         ${b.label} <br>
         <img src="assets/images/icongold.png" style="width:4vw;">${b.price}
       </button>
@@ -315,4 +316,3 @@ document.getElementById("btnMap").onclick = openMap;
 
 // ------- Mobil scroll engelle -----
 window.addEventListener('touchmove', function(e){ if(e.target.closest('.object')) return; e.preventDefault(); }, { passive:false });
-

@@ -13,7 +13,7 @@
       background: #72c8fc;
     }
     .game-bg {
-      background: url('background.png') center top/cover no-repeat;
+      background: url('assets/images/background.png') center top/cover no-repeat;
       position: absolute; inset: 0;
       width: 100vw; height: 100vh; z-index: 0;
     }
@@ -46,6 +46,7 @@
     .info-bar {
       margin: 22px 0 12px 0;
       display: flex; gap: 16px; justify-content: center; align-items: center;
+      flex-wrap: wrap;
     }
     .info-item {
       display: flex; align-items: center; gap: 5px;
@@ -73,9 +74,43 @@
     .btn-reset:active {
       background: #e0b123;
     }
+    /* Alt Menü */
+    .bottom-menu {
+      position: fixed;
+      bottom: 0; left: 0; width: 100vw;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: #f7c33ed0;
+      box-shadow: 0 -2px 16px #0001;
+      padding: 6px 0 2px 0;
+      z-index: 10;
+      height: 56px;
+      border-radius: 15px 15px 0 0;
+    }
+    .menu-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #68431b;
+      font-weight: bold;
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+    }
+    .menu-btn img {
+      width: 34px; height: 34px;
+      margin-bottom: 2px;
+      pointer-events: none;
+    }
     @media (max-width: 600px) {
       .field-img { max-width: 95vw; }
       .field-area { padding: 8vw 3vw; }
+      .bottom-menu { height: 48px; }
+      .menu-btn img { width: 27px; height: 27px; }
     }
   </style>
 </head>
@@ -83,17 +118,26 @@
   <div class="game-bg"></div>
   <div class="game-container">
     <div class="info-bar" id="infoBar">
-      <div class="info-item"><img src="iconenergy.png" alt="Enerji"> <span id="energyVal">5</span></div>
-      <div class="info-item"><img src="icongold.png" alt="Altın"> <span id="goldVal">0</span></div>
-      <div class="info-item"><img src="iconwheat.png" alt="Buğday"> <span id="wheatVal">0</span></div>
+      <div class="info-item"><img src="assets/images/iconenergy.png" alt="Enerji"> <span id="energyVal">5</span></div>
+      <div class="info-item"><img src="assets/images/icongold.png" alt="Altın"> <span id="goldVal">0</span></div>
+      <div class="info-item"><img src="assets/images/iconwheat.png" alt="Buğday"> <span id="wheatVal">0</span></div>
+      <div class="info-item"><img src="assets/images/icondiamond.png" alt="Elmas"> <span id="diamondVal">0</span></div>
     </div>
     <div class="field-area">
-      <img src="field.png" id="field" class="field-img" alt="Tarla">
+      <img src="assets/images/field.png" id="field" class="field-img" alt="Tarla">
       <div style="margin-top:8px; text-align:center; color:#53340a; font-size:17px;" id="fieldLabel">
         Tarlaya tıkla ve ekim yap!
       </div>
       <button class="btn-reset" id="resetBtn">Tekrar Oyna</button>
     </div>
+  </div>
+  <!-- Alt Menü -->
+  <div class="bottom-menu">
+    <button class="menu-btn" id="btnBarn"><img src="assets/images/iconbarn.png" alt="Çiftlik"><span>Çiftlik</span></button>
+    <button class="menu-btn" id="btnStore"><img src="assets/images/iconstore.png" alt="Market"><span>Market</span></button>
+    <button class="menu-btn" id="btnMap"><img src="assets/images/iconmap.png" alt="Harita"><span>Harita</span></button>
+    <button class="menu-btn" id="btnTasks"><img src="assets/images/icontasks.png" alt="Görevler"><span>Görevler</span></button>
+    <button class="menu-btn" id="btnSettings"><img src="assets/images/iconsettings.png" alt="Ayarlar"><span>Ayarlar</span></button>
   </div>
   <script src="scripts.js"></script>
 </body>

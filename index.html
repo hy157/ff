@@ -18,103 +18,34 @@
       position: relative;
       background: url('assets/images/background.png') center top/cover no-repeat;
       overflow: hidden;
+      display: none; /* Başlangıçta gizli! */
     }
-    /* ÜST BAR */
     .top-bar {
       position: fixed;
       top: 0; left: 0; width: 100vw;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 11px;
-      padding: 7px 10px 2px 8px;
-      background: #fffdeeea;
-      z-index: 101;
+      display: flex; align-items: center; justify-content: flex-start;
+      gap: 11px; padding: 7px 10px 2px 8px;
+      background: #fffdeeea; z-index: 101;
       box-shadow: 0 2px 16px #0001;
-      height: 45px;
-      border-radius: 0 0 14px 14px;
-      font-size: 18px;
+      height: 45px; border-radius: 0 0 14px 14px; font-size: 18px;
     }
-    .top-bar .bar-item {
-      display: flex; align-items: center; gap: 4px;
-      font-weight: 700; color: #68431b;
-      background: #f7c33e35; border-radius: 7px; padding: 3px 9px;
-    }
+    .top-bar .bar-item { display: flex; align-items: center; gap: 4px; font-weight: 700; color: #68431b; background: #f7c33e35; border-radius: 7px; padding: 3px 9px;}
     .top-bar .bar-item img { width: 25px; height: 25px; }
-    .top-bar .settings-btn {
-      margin-left: auto;
-      background: none; border: none; outline: none;
-      cursor: pointer; border-radius: 8px;
-      padding: 4px 8px;
-    }
+    .top-bar .settings-btn { margin-left: auto; background: none; border: none; outline: none; cursor: pointer; border-radius: 8px; padding: 4px 8px;}
     .top-bar .settings-btn img { width: 28px; height: 28px;}
-    /* ARKA PLAN MODALLAR */
-    .modal-bg {
-      position: fixed; left:0; top:0; width:100vw; height:100vh;
-      background: rgba(0,0,0,0.18);
-      z-index: 2002;
-      display: flex; align-items: center; justify-content: center;
-      animation: fadein .4s;
-    }
-    .modal-panel {
-      background: #fffbe9;
-      border-radius: 18px;
-      padding: 26px 16px 20px 16px;
-      min-width: 230px; max-width: 93vw;
-      box-shadow: 0 3px 32px #0002;
-      position: relative; text-align: center;
-    }
-    .close-btn {
-      position: absolute; right: 13px; top: 13px; background: #ffe093;
-      border: none; border-radius: 50%; width: 31px; height: 31px;
-      font-size: 20px; font-weight: bold; color: #bc7200; cursor: pointer;
-    }
-    /* Açılış ekranı */
-    .splash-bg {
-      position: fixed; left:0;top:0;width:100vw;height:100vh;z-index:3000;
-      background: url('assets/images/background.png') center top/cover no-repeat;
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column;
-      animation: fadein .8s;
-    }
-    .splash-panel {
-      background: #fffcece6; border-radius: 18px; box-shadow:0 4px 42px #0002;
-      padding: 24px 20px 30px 20px; text-align:center; min-width:210px; max-width:95vw;
-      display: flex; flex-direction: column; align-items: center;
-    }
+    .modal-bg { position: fixed; left:0; top:0; width:100vw; height:100vh; background: rgba(0,0,0,0.18); z-index: 2002; display: flex; align-items: center; justify-content: center; animation: fadein .4s;}
+    .modal-panel { background: #fffbe9; border-radius: 18px; padding: 26px 16px 20px 16px; min-width: 230px; max-width: 93vw; box-shadow: 0 3px 32px #0002; position: relative; text-align: center;}
+    .close-btn { position: absolute; right: 13px; top: 13px; background: #ffe093; border: none; border-radius: 50%; width: 31px; height: 31px; font-size: 20px; font-weight: bold; color: #bc7200; cursor: pointer;}
+    .splash-bg { position: fixed; left:0;top:0;width:100vw;height:100vh;z-index:3000; background: url('assets/images/background.png') center top/cover no-repeat; display: flex; align-items: center; justify-content: center; flex-direction: column; animation: fadein .8s;}
+    .splash-panel { background: #fffcece6; border-radius: 18px; box-shadow:0 4px 42px #0002; padding: 24px 20px 30px 20px; text-align:center; min-width:210px; max-width:95vw; display: flex; flex-direction: column; align-items: center;}
     .splash-panel img { width: 80px; margin-bottom: 15px;}
-    .play-btn, .load-btn {
-      background: #f7c33e; color: #53340a;
-      font-weight: bold; border: none; border-radius: 7px;
-      box-shadow: 0 2px 8px #0001;
-      font-size: 21px; padding: 12px 30px; margin: 10px 0 0 0;
-      cursor: pointer; transition: background .2s;
-    }
+    .play-btn, .load-btn { background: #f7c33e; color: #53340a; font-weight: bold; border: none; border-radius: 7px; box-shadow: 0 2px 8px #0001; font-size: 21px; padding: 12px 30px; margin: 10px 0 0 0; cursor: pointer; transition: background .2s;}
     .play-btn:active, .load-btn:active { background: #e0b123;}
     .load-btn:disabled { background:#eee2b6; color:#baa755; cursor:default;}
-    /* Alt Menü */
-    .bottom-menu {
-      position: fixed; bottom: 0; left: 0; width: 100vw;
-      display: flex; justify-content: space-around; align-items: center;
-      background: #f7c33edb; box-shadow: 0 -2px 16px #0001;
-      padding: 5px 0 2px 0; z-index: 100;
-      height: 62px;
-      border-radius: 15px 15px 0 0;
-    }
-    .menu-btn {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-size: 13px; color: #68431b; font-weight: bold;
-      background: none; border: none; outline: none; cursor: pointer;
-    }
+    .bottom-menu { position: fixed; bottom: 0; left: 0; width: 100vw; display: flex; justify-content: space-around; align-items: center; background: #f7c33edb; box-shadow: 0 -2px 16px #0001; padding: 5px 0 2px 0; z-index: 100; height: 62px; border-radius: 15px 15px 0 0;}
+    .menu-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; color: #68431b; font-weight: bold; background: none; border: none; outline: none; cursor: pointer;}
     .menu-btn img { width: 32px; height: 32px; margin-bottom: 2px; pointer-events: none; }
-    /* HARİTA KISMI */
-    .harita-canvas {
-      position: absolute; top: 45px; left: 0;
-      width: 100vw; height: calc(100vh - 108px);
-      overflow: visible;
-      z-index: 1;
-    }
-    /* Mobil */
+    .harita-canvas { position: absolute; top: 45px; left: 0; width: 100vw; height: calc(100vh - 108px); overflow: visible; z-index: 1;}
     @media (max-width: 600px) {
       .harita-canvas { height: calc(100vh - 93px);}
       .menu-btn img { width: 25px; height: 25px;}
@@ -127,7 +58,7 @@
   </style>
 </head>
 <body>
-  <div id="game-area" style="display:none;">
+  <div id="game-area">
     <div class="top-bar" id="topBar">
       <div class="bar-item"><img src="assets/images/icongold.png"> <span id="goldVal">0</span></div>
       <div class="bar-item"><img src="assets/images/iconenergy.png"> <span id="energyVal">5</span></div>
